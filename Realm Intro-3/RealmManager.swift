@@ -11,8 +11,27 @@ import RealmSwift
 class RealmManager: ObservableObject {
     
     private(set) var realm: Realm?
+    @Published var countries: Results<Country>?
+    var countriesArray: [Country]? {
+        if let countries = countries {
+            return Array(countries)
+        } else {
+            return []
+        }
+    }
+    private var countriesToken: NotificationToken?
+    
     init(name: String) {
         initializeSchema(name: name)
+        setupObserver()
+    }
+    
+    func setupObserver() {
+        guard let realm = realm else { return }
+        let observedCountries = realm.objects(Country.self)
+        countriesToken = observedCountries.observe({ [weak self] _ in
+            self?.countries = observedCountries
+        })
     }
     
     func initializeSchema(name: String) {
