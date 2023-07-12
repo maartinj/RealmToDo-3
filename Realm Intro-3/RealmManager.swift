@@ -52,4 +52,16 @@ class RealmManager: ObservableObject {
             print("Error opening default realm", error)
         }
     }
+    
+    func add(_ country: Country) {
+        if let realm = realm {
+            do {
+                try realm.write {
+                    realm.add(country)
+                }
+            } catch {
+                print("Error adding country to realm", error)
+            }
+        }
+    }
 }

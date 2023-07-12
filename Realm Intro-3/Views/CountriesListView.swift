@@ -44,6 +44,7 @@ struct CountriesListView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
 //                        $countries.append(Country())
+                        realmManager.add(Country())
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
