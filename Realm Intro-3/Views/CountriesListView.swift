@@ -11,11 +11,10 @@ import RealmSwift
 struct CountriesListView: View {
     @EnvironmentObject var realmManager: RealmManager
     @FocusState private var isFocused: Bool?
-    @State private var searchFilter = ""
     var body: some View {
         NavigationView {
             VStack {
-                if let countries = realmManager.countriesArray {
+                if let countries = realmManager.searchResults {
                     List {
                         ForEach(countries.sorted{$0.name < $1.name}) { country in
                             if !country.isInvalidated {
@@ -30,13 +29,13 @@ struct CountriesListView: View {
                         .listRowSeparator(.hidden)
                     }
                     .listStyle(.plain)
+                    .searchable(text: $realmManager.searchFilter, placement: .navigationBarDrawer(displayMode: .always)) {
+                        ForEach(countries) { country in
+                            Text(country.name)
+                                .searchCompletion(country.name)
+                        }
+                    }
                 }
-//                    .searchable(text: $searchFilter,collection: $countries, keyPath: \.name, placement: .navigationBarDrawer(displayMode: .always)) {
-//                        ForEach(countries) { country in
-//                            Text(country.name)
-//                                .searchCompletion(country.name)
-//                        }
-//                    }
             }
             .animation(.default, value: realmManager.countries)
             .navigationTitle("Countries")
@@ -65,7 +64,7 @@ struct CountriesListView: View {
     }
     func deleteCountry(indexSet: IndexSet) {
         guard let index = indexSet.first else { return }
-        let selectedCountry = realmManager.countriesArray!.sorted {$0.name < $1.name}[index]
+        let selectedCountry = realmManager.countriesArray.sorted {$0.name < $1.name}[index]
         realmManager.deleteCities(for: selectedCountry)
         realmManager.remove(selectedCountry)
     }

@@ -12,13 +12,23 @@ class RealmManager: ObservableObject {
     
     private(set) var realm: Realm?
     @Published var countries: Results<Country>?
-    var countriesArray: [Country]? {
+    @Published var searchFilter = ""
+    var countriesArray: [Country] {
         if let countries = countries {
             return Array(countries)
         } else {
             return []
         }
     }
+    
+    var searchResults: [Country]? {
+        if searchFilter.isEmpty {
+            return countriesArray
+        } else {
+            return countriesArray.filter{$0.name.lowercased().contains(searchFilter.lowercased())}
+        }
+    }
+    
     private var countriesToken: NotificationToken?
     
     init(name: String) {

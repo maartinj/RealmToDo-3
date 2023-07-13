@@ -6,6 +6,7 @@
 //
 
 // Link: https://www.youtube.com/watch?v=oK5xoK9QGSQ&ab_channel=StewartLynch
+// Realm Documentation: https://www.mongodb.com/docs/realm/sdk/swift/
 
 import SwiftUI
 
