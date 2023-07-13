@@ -64,4 +64,30 @@ class RealmManager: ObservableObject {
             }
         }
     }
+    
+    func remove(_ country: Country) {
+        if let realm = realm {
+            if let countryToDelete = realm.object(ofType: Country.self, forPrimaryKey: country.id) {
+                do {
+                    try realm.write {
+                        realm.delete(countryToDelete)
+                    }
+                } catch {
+                    print("Could not delete country", error)
+                }
+            }
+        }
+    }
+    
+    func deleteCities(for country: Country) {
+        if let realm = realm {
+            do {
+                try realm.write {
+                    realm.delete(country.cities)
+                }
+            } catch {
+                print("Could not delete cities")
+            }
+        }
+    }
 }

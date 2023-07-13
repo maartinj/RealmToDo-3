@@ -10,9 +10,7 @@ import RealmSwift
 
 struct CountriesListView: View {
     @EnvironmentObject var realmManager: RealmManager
-//    @ObservedResults(Country.self) var countries
     @FocusState private var isFocused: Bool?
-    @State private var presentAlert = false
     @State private var searchFilter = ""
     var body: some View {
         NavigationView {
@@ -20,13 +18,15 @@ struct CountriesListView: View {
                 if let countries = realmManager.countriesArray {
                     List {
                         ForEach(countries.sorted{$0.name < $1.name}) { country in
-                            NavigationLink {
+                            if !country.isInvalidated {
+                                NavigationLink {
                                 CitiesListView(country: country)
                             } label: {
                                 CountryRowView(country: country, isFocused: _isFocused)
                             }
                         }
-                        .onDelete(perform: deleteCountry)
+                    }
+                    .onDelete(perform: deleteCountry)
                         .listRowSeparator(.hidden)
                     }
                     .listStyle(.plain)
@@ -62,17 +62,12 @@ struct CountriesListView: View {
                 }
             }
         }
-        .alert("You must first delete all of the cities in this country.", isPresented: $presentAlert, actions: {})
     }
     func deleteCountry(indexSet: IndexSet) {
         guard let index = indexSet.first else { return }
-//        let selectedCountry = Array(countries.sorted(byKeyPath: "name"))[index]
-//        guard selectedCountry.cities.isEmpty else {
-//            // show alert
-//            presentAlert.toggle()
-//            return
-//        }
-//        $countries.remove(selectedCountry)
+        let selectedCountry = realmManager.countriesArray!.sorted {$0.name < $1.name}[index]
+        realmManager.deleteCities(for: selectedCountry)
+        realmManager.remove(selectedCountry)
     }
 }
 
